@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collector
+  namespace: trace
+spec:
+  selector:
+    matchLabels:
+      app: collector
+  template:
+    metadata:
+      labels:
+        app: collector
+        version: 1.0.0
+    spec:
+      containers:
+        - name: collector
+          image: registry.cn-hangzhou.aliyuncs.com/maturity/collector:v27
+          env:
+            - name: spring.redis.port
+              value: "6379"
+            - name: spring.redis.host
+              value: "106.14.238.7"
+            - name: spring.data.neo4j.uri
+              value: "bolt://106.14.238.7:7687"
+            - name: spring.data.neo4j.username
+              value: "neo4j"
+            - name: spring.data.neo4j.password
+              value: "SAS bi-directional PNG 67"
+            - name: spring.data.neo4j.repositories.enable
+              value: "true"
+            - name: spring.data.neo4j.open-in-view
+              value: "true"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: collector
+  namespace: trace
+spec:
+  type: ClusterIP
+  selector:
+    app: collector
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081
+    - name: tcp
+      port: 3200
+      targetPort: 3200
+
